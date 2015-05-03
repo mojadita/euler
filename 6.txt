@@ -1,0 +1,157 @@
+p(1, 0) = 1
+o
+
+p(2, 0) = 2
+oo
+o o
+
+p(3, 0) = 3
+ooo
+oo o
+o o o
+
+p(4, 0) = 5
+oooo
+ooo o
+oo oo
+oo o o
+o o o o
+
+p(5, 0) = 7
+ooooo
+oooo o
+ooo oo
+ooo o o
+oo oo o
+oo o o o
+o o o o o
+
+p(6, 0) = 11
+oooooo
+ooooo o
+oooo oo
+oooo o o
+ooo ooo
+ooo oo o
+ooo o o o
+oo oo oo
+oo oo o o
+oo o o o o
+o o o o o o
+
+p(7, 0) = 15
+ooooooo
+oooooo o
+ooooo oo
+ooooo o o
+oooo ooo
+oooo oo o
+oooo o o o
+ooo ooo o
+ooo oo oo
+ooo oo o o
+ooo o o o o
+oo oo oo o
+oo oo o o o
+oo o o o o o
+o o o o o o o
+
+p(8, 0) = 22
+oooooooo
+ooooooo o
+oooooo oo
+oooooo o o
+ooooo ooo
+ooooo oo o
+ooooo o o o
+oooo oooo
+oooo ooo o
+oooo oo oo
+oooo oo o o
+oooo o o o o
+ooo ooo oo
+ooo ooo o o
+ooo oo oo o
+ooo oo o o o
+ooo o o o o o
+oo oo oo oo
+oo oo oo o o
+oo oo o o o o
+oo o o o o o o
+o o o o o o o o
+
+p(9, 0) = 30
+ooooooooo
+oooooooo o
+ooooooo oo
+ooooooo o o
+oooooo ooo
+oooooo oo o
+oooooo o o o
+ooooo oooo
+ooooo ooo o
+ooooo oo oo
+ooooo oo o o
+ooooo o o o o
+oooo oooo o
+oooo ooo oo
+oooo ooo o o
+oooo oo oo o
+oooo oo o o o
+oooo o o o o o
+ooo ooo ooo
+ooo ooo oo o
+ooo ooo o o o
+ooo oo oo oo
+ooo oo oo o o
+ooo oo o o o o
+ooo o o o o o o
+oo oo oo oo o
+oo oo oo o o o
+oo oo o o o o o
+oo o o o o o o o
+o o o o o o o o o
+
+p(10, 0) = 42
+oooooooooo
+ooooooooo o
+oooooooo oo
+oooooooo o o
+ooooooo ooo
+ooooooo oo o
+ooooooo o o o
+oooooo oooo
+oooooo ooo o
+oooooo oo oo
+oooooo oo o o
+oooooo o o o o
+ooooo ooooo
+ooooo oooo o
+ooooo ooo oo
+ooooo ooo o o
+ooooo oo oo o
+ooooo oo o o o
+ooooo o o o o o
+oooo oooo oo
+oooo oooo o o
+oooo ooo ooo
+oooo ooo oo o
+oooo ooo o o o
+oooo oo oo oo
+oooo oo oo o o
+oooo oo o o o o
+oooo o o o o o o
+ooo ooo ooo o
+ooo ooo oo oo
+ooo ooo oo o o
+ooo ooo o o o o
+ooo oo oo oo o
+ooo oo oo o o o
+ooo oo o o o o o
+ooo o o o o o o o
+oo oo oo oo oo
+oo oo oo oo o o
+oo oo oo o o o o
+oo oo o o o o o o
+oo o o o o o o o o
+o o o o o o o o o o
