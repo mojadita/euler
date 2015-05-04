@@ -29,6 +29,7 @@
 
 unsigned ind = 0;
 unsigned mod = MOD;
+
 #define P(x) "%*s" x, ind<<2, ""
 
 unsigned p(const unsigned _a, const char * const s);
@@ -43,32 +44,38 @@ unsigned q(const unsigned _a, const unsigned _b, const char * const s)
     if (s) printf(P("%sq(a=%u, b=%u) = (\n"), s, a, b);
     ind++;
 
-    cdat = lookup_q(a, b);
-
-    if (cdat) {
-        if (s) printf(P("/* * * CACHED!!! * * */\n"));
-        res = cdat->res;
-    } else if (b <= 1) {
+    if (b <= 1) {
+        /* don't cache these entries
+         * (the most frequent) */
         res = 1;
-    } else if (a > b) {
-        res = p(b, s ? "" : NULL);
-    } else { /* a <= b */
-        int i = 0;
-        res = 0;
-        while (a > 0) {
-            if (a > b)
-                res += p(b, s ? i++ ? "+ " : "" : NULL);
-            else
-                res += q(a, b-a, s ? i++ ? "+ " : "" : NULL);
-            a--;
-            res %= mod;
-        }
+    } else {
+        cdat = lookup_q(_a, _b);
+
+        if (cdat) {
+            if (s) printf(P("/* * * CACHED!!! * * */\n"));
+            res = cdat->res;
+        } else {
+            if (a > b) {
+                res = p(b, s ? "" : NULL);
+            } else { /* a <= b */
+                int i = 0;
+                res = 0;
+                while (a > 0) {
+                    if (a > b)
+                        res += p(b, s ? i++ ? "+ " : "" : NULL);
+                    else
+                        res += q(a, b-a, s ? i++ ? "+ " : "" : NULL);
+                    a--;
+                    res %= mod;
+                }
+            } /* if */
+            add_q(_a, _b, res);
+        } /* if */
     } /* if */
-    if (!cdat) {
-        add_q(_a, _b, res);
-    } /* if */
+
     ind--;
     if (s) printf(P(") ==> %u\n"), res);
+
     return res;
 }
 
@@ -91,9 +98,8 @@ unsigned p(const unsigned _a, const char * const s)
             res += q(a, b, s ? b ? "+ " : "" : NULL);
             res %= mod;
         } /* for */
+        add_p(_a, res);
     } /* if */
-
-    if (!cdat) add_p(_a, res);
 
     ind--;
     if (s) printf(P(") ==> %u\n"), res);
