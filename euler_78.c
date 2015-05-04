@@ -1,6 +1,3 @@
-#include <stdio.h>
-#include <assert.h>
-
 /*
  * Project Euler #78
  * Let p(n) represent the number of different ways in which n
@@ -19,63 +16,110 @@
  * one million.
  */
 
-unsigned p_r(unsigned a, unsigned b, char *s)
+#include <stdint.h>
+#include <stdio.h>
+#include <getopt.h>
+#include "euler_78_cache.h"
+
+#define MOD     1000000
+
+#ifndef DEBUG
+#define DEBUG 0
+#endif
+
+unsigned ind = 0;
+unsigned mod = MOD;
+#define P(x) "%*s" x, ind<<2, ""
+
+unsigned p(const unsigned _a, const char * const s);
+unsigned q(const unsigned _a, const unsigned _b, const char * const s);
+
+unsigned q(const unsigned _a, const unsigned _b, const char * const s)
 {
-    static unsigned ind = 0;
     unsigned res;
+    struct data_q *cdat;
+    unsigned a = _a, b = _b;
 
-    assert(a > 0);
-    printf("%*s%sp_r(%d,%d) = (\n", ind, "", s, a, b);
-    ind += 2;
+    if (s) printf(P("%sq(a=%u, b=%u) = (\n"), s, a, b);
+    ind++;
 
-    if (b == 0) {
+    cdat = lookup_q(a, b);
+
+    if (cdat) {
+        if (s) printf(P("/* * * CACHED!!! * * */\n"));
+        res = cdat->res;
+    } else if (b <= 1) {
         res = 1;
-        printf("%*s/* b == 0 */\n", ind, "");
-        printf("%*s1\n", ind, "");
-        while (--a > ++b) {
-            res += p_r(a, b, "+ ");
-        } /* while */
-        if (a > 0)
-            res += p_r(a, b, "+ ");
-    } else if (a > b) { /* b > 0 */
-        printf("%*s/* a > b, b > 0 */\n", ind, "");
-        res = p_r(b, 0, "");
-    } else { /* b > 0, a <= b */
-        unsigned c = a;
-        printf("%*s/* a <= b, b > 0 */\n", ind, "");
+    } else if (a > b) {
+        res = p(b, s ? "" : NULL);
+    } else { /* a <= b */
+        int i = 0;
         res = 0;
         while (a > 0) {
-            res += p_r(a, b-a, "");
+            if (a > b)
+                res += p(b, s ? i++ ? "+ " : "" : NULL);
+            else
+                res += q(a, b-a, s ? i++ ? "+ " : "" : NULL);
             a--;
-        } /*  while */
-        a = c;
-        while (++b, --a > 0) {
-            res += p_r(a, b, res ? "+ " : "");
+            res %= mod;
         }
     } /* if */
+    if (!cdat) {
+        add_q(_a, _b, res);
+    } /* if */
+    ind--;
+    if (s) printf(P(") ==> %u\n"), res);
+    return res;
+}
 
-    ind -= 2;
-    printf("%*s) --> %d\n", ind, "", res);
+unsigned p(const unsigned _a, const char * const s)
+{
+    unsigned b;
+    unsigned res = 0;
+    struct data_p *cdat;
+    unsigned a = _a;
+
+    if (s) printf(P("%sp(a=%u) = (\n"), s, a);
+    ind++;
+
+    cdat = lookup_p(a);
+    if (cdat) {
+        if (s) printf(P("/* * * CACHED!!! * * */\n"));
+        res = cdat->res;
+    } else {
+        for (b = 0; a > 0; a--, b++) {
+            res += q(a, b, s ? b ? "+ " : "" : NULL);
+            res %= mod;
+        } /* for */
+    } /* if */
+
+    if (!cdat) add_p(_a, res);
+
+    ind--;
+    if (s) printf(P(") ==> %u\n"), res);
 
     return res;
 } /* p */
 
-unsigned p(unsigned a)
-{
-    unsigned b = 0;
-    res = 0;
-    while (a > 0)
-        res += p_r(a--, b++, res ? "+ " : "");
-    return res;
-}
-
 int main(int argc, char **argv)
 {
-    int i;
-    for (i = 1; i < argc; i++) {
-        unsigned n = atol(argv[i]);
-        printf("\033[32mp(%d,0)\033[0m = %d\n",
-                n, p_r(n, 0, ""));
-    }
+    int i, opt;
+    char *tr = NULL;
+    unsigned arg = 0, res = 1;
+
+    while ((opt = getopt(argc, argv, "vi:m:")) != EOF) {
+        switch(opt) {
+        case 'v': tr = ""; break;
+        case 'i': arg = atoi(optarg); break;
+        case 'm': mod = atoi(optarg); break;
+        } /* switch */
+    } /* while */
+
+    do {
+        res = p(++arg, tr);
+        printf("p(%u) ~= %u (mod %d)\n",
+                arg, res, mod);
+    } while (res);
+
     return 0;
-}
+} /* main */
