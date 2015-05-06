@@ -22,10 +22,10 @@ int main()
     for (i = 0; b < 4000000; i++) {
         uint64_t c = a + b;
         if (i % 3 == 0) {
-            printf("%s%d", n++ ? "+" : "", b);
+            printf("%s%llu", n++ ? "+" : "", b);
             acum += b;
         }
         a = b; b = c;
     }
-    printf("=%lld\n", acum);
+    printf("=%llu\n", acum);
 }
