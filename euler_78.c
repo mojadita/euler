@@ -221,7 +221,7 @@ int main(int argc, char **argv)
     } while (res && !interrupted);
 
     if (interrupted)
-        TR(cache_save(global_state.arg, argv[0]));
+        TR(cache_save(&global_state, argv[0]));
 
     return 0;
 } /* main */
