@@ -76,7 +76,7 @@ unsigned q(const unsigned _a, const unsigned _b, const char * const s)
     if (s) printf(P("%sq(a=%u, b=%u) = (\n"), s, a, b);
     ind++;
 
-    if (b <= 1) {
+    if (b <= 1 || a <= 1) {
         /* don't cache these entries
          * (the most frequent) */
         res = 1;
