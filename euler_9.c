@@ -1,5 +1,3 @@
-#include <stdio.h>
-
 /*
  * Project Euler #9
  * A Pythagorean triplet is a set of three natural numbers,
@@ -12,15 +10,27 @@
  * Find the product abc.
  */
 
-int main()
-{
-    int a, b, c;
+#include <stdio.h>
+#include <stdlib.h>
+#include <getopt.h>
 
-    for (a = 1; a < 1000; a++)
-        for (b = a+1; b < 1000; b++)
-            for (c = b+1; c < 1000; c++)
-                if (a + b + c == 1000 && a*a + b*b == c*c)
+int main(int argc, char **argv)
+{
+    int a, b, c, opt, size = 1000;
+    while ((opt = getopt(argc, argv, "s:")) != EOF) {
+        switch (opt) {
+        case 's': size = atoi(optarg); break;
+        } /* switch */
+    } /* while */
+
+
+    for (a = 1; a < size; a++)
+        for (b = a+1; b < size; b++)
+            for (c = b+1; c < size; c++)
+                if (a + b + c == size && a*a + b*b == c*c)
                     goto out;
+    exit(EXIT_FAILURE);
 out:
-    printf("a=%d, b=%d, c=%d, abc=%d\n", a, b, c, a*b*c);
-}
+    printf("a=%d, b=%d, c=%d, abc=%d (size=%d)\n", a, b, c, a*b*c, size);
+    exit(EXIT_SUCCESS);
+} /* main */
