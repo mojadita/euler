@@ -20,6 +20,14 @@
 
 #include <stdio.h>
 
+#define GZIP            "/bin/gzip"
+#define ARCHIVE_NAME    ".%s-cache.gz"
+
+struct cache_data {
+    unsigned mod;
+    unsigned arg;
+};
+
 struct data_p {
     unsigned n, res;
 };
@@ -34,4 +42,5 @@ struct data_q *lookup_q(unsigned a, unsigned b);
 void add_p(unsigned n, unsigned res);
 void add_q(unsigned a, unsigned b, unsigned res);
 
-void cache_print(void);
+void cache_save(const struct cache_data *cd, const char *n);
+void cache_restore(struct cache_data *cd, const char *n);
