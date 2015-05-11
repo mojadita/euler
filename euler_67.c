@@ -20,4 +20,121 @@
  */
 
 #include <stdio.h>
+#include <assert.h>
+
+#define max_height  (256)
+#define N           (max_height*(max_height-1)/2)
+
+#define D(X) __FILE__":%d:%s:" X, __LINE__, __func__
+
+struct cell {
+    unsigned char   flg;
+    unsigned char   val;
+    unsigned short  sum;
+};
+
+struct cell array[N+1];
+struct cell *lines[max_height];
+
+int main()
+{
+    int i = 0, j = 0, n = 0;
+    int nlines;
+    struct cell *p = array;
+    unsigned val;
+
+    while (scanf("%u", &val) == 1) {
+        p->val = val;
+        if (i == 0 && j == 0) { /* top of the tree */
+            lines[0] = p;
+            p->flg = 0x00;
+            p->sum = p->val;
+        } else if (j == 0) { /* leftmost cell, parent is right */
+            lines[i] = p;
+            p->flg = 0x01;
+            p->sum = p->val + (p - i)->sum;
+        } else if (j == i) { /* rightmost cell */
+            p->flg = 0x02;
+            p->sum = p->val + (p - i - 1)->sum;
+        } else { /* inner node */
+            p->flg = 0x00;
+            if ((p-i-1)->sum >= (p-i)->sum)
+                p->flg |= 0x02;
+            if ((p-i-1)->sum <= (p-i)->sum)
+                p->flg |= 0x01;
+            p->sum = p->flg & 0x01
+                ? p->val + (p-i)->sum
+                : p->val + (p-i-1)->sum;
+        } /* if */
+        j++;
+        if (j > i) {
+            j = 0;
+            i++;
+        } /* if */
+        p++; n++;
+        assert(n <= N);
+    } /* while */
+    if (j) {
+        fprintf(stderr,
+                D("line incomplete, completing with 0 values\n"));
+        while (j < i) {
+            p->val = 0;
+            p->flg = 0x00;
+            if ((p-i-1)->sum >= (p-i)->sum)
+                p->flg |= 0x02;
+            if ((p-i-1)->sum <= (p-i)->sum)
+                p->flg |= 0x01;
+            p->sum = p->flg & 0x01
+                ? (p-i)->sum
+                : (p-i-1)->sum;
+            j++;
+            if (j > i) {
+                j = 0;
+                i++;
+            } /* if */
+            p++; n++;
+        } /* while */
+        /* j == i */
+        p->flg = 0x02;
+        p->sum = p->val + (p - i - 1)->sum;
+        j = 0;
+        i++; p++; n++;
+    } /* if */
+    nlines = i;
+    /* now we have n complete lines */
+    { short max = 0;
+        for (i = 0; i < nlines; i++) {
+            if (lines[nlines-1][i].sum > max) {
+                max = lines[nlines-1][i].sum;
+                j = i;
+            }
+        } /* for */
+        printf(D("max = %hd\n"), max);
+        for (i = 0; i < nlines; i++)
+            if (lines[nlines-1][i].sum == max)
+                lines[nlines-1][i].flg |= 0x04;
+        for (i = nlines-1; i; i--) {
+            for (j = 0; j <= i; j++) {
+                if (lines[i][j].flg & 0x04) {
+                    if (lines[i][j].flg & 0x02)
+                        lines[i-1][j-1].flg |= 0x04;
+                    if (lines[i][j].flg & 0x01)
+                        lines[i-1][j].flg |= 0x04;
+                }
+            }
+        }
+        for (i = 0; i < nlines; i++) {
+            printf("%*s", 2*(nlines-i), "");
+            for (j = 0; j <= i; j++) {
+                char *fmt;
+                if (lines[i][j].flg & 0x04)
+                    fmt = "%s\033[32m%02d\033[0m";
+                else
+                    fmt = "%s%02d";
+                printf(fmt, j ? ", " : "", lines[i][j].val);
+            } /* for */
+            puts("");
+        } /* for */
+    }
+} /* main */
 
