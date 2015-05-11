@@ -42,7 +42,9 @@ int main()
     int nlines;
     struct cell *p = array;
     unsigned val;
+    short max = 0;
 
+    /* read data */
     while (scanf("%u", &val) == 1) {
         p->val = val;
         if (i == 0 && j == 0) { /* top of the tree */
@@ -52,28 +54,28 @@ int main()
         } else if (j == 0) { /* leftmost cell, parent is right */
             lines[i] = p;
             p->flg = 0x01;
-            p->sum = p->val + (p - i)->sum;
+            p->sum = p->val + (p - i)->sum; /* this is the parent right */
         } else if (j == i) { /* rightmost cell */
             p->flg = 0x02;
-            p->sum = p->val + (p - i - 1)->sum;
+            p->sum = p->val + (p - i - 1)->sum; /* this is the parent left */
         } else { /* inner node */
             p->flg = 0x00;
             if ((p-i-1)->sum >= (p-i)->sum)
-                p->flg |= 0x02;
+                p->flg |= 0x02; /* parent left is a parent */
             if ((p-i-1)->sum <= (p-i)->sum)
-                p->flg |= 0x01;
-            p->sum = p->flg & 0x01
+                p->flg |= 0x01; /* parent right is a parent */
+            p->sum = p->flg & 0x01 /* compute sum */
                 ? p->val + (p-i)->sum
                 : p->val + (p-i-1)->sum;
         } /* if */
         j++;
         if (j > i) {
-            j = 0;
-            i++;
+            j = 0; i++;
         } /* if */
         p++; n++;
         assert(n <= N);
     } /* while */
+
     if (j) {
         fprintf(stderr,
                 D("line incomplete, completing with 0 values\n"));
@@ -101,40 +103,43 @@ int main()
         i++; p++; n++;
     } /* if */
     nlines = i;
-    /* now we have n complete lines */
-    { short max = 0;
-        for (i = 0; i < nlines; i++) {
-            if (lines[nlines-1][i].sum > max) {
-                max = lines[nlines-1][i].sum;
-                j = i;
-            }
-        } /* for */
-        printf(D("max = %hd\n"), max);
-        for (i = 0; i < nlines; i++)
-            if (lines[nlines-1][i].sum == max)
-                lines[nlines-1][i].flg |= 0x04;
-        for (i = nlines-1; i; i--) {
-            for (j = 0; j <= i; j++) {
-                if (lines[i][j].flg & 0x04) {
-                    if (lines[i][j].flg & 0x02)
-                        lines[i-1][j-1].flg |= 0x04;
-                    if (lines[i][j].flg & 0x01)
-                        lines[i-1][j].flg |= 0x04;
-                }
-            }
+
+    /* now we have n complete lines, get the max */
+    for (i = 0; i < nlines; i++) {
+        if (lines[nlines-1][i].sum > max) {
+            max = lines[nlines-1][i].sum;
+            j = i;
         }
-        for (i = 0; i < nlines; i++) {
-            printf("%*s", 2*(nlines-i), "");
-            for (j = 0; j <= i; j++) {
-                char *fmt;
-                if (lines[i][j].flg & 0x04)
-                    fmt = "%s\033[32m%02d\033[0m";
-                else
-                    fmt = "%s%02d";
-                printf(fmt, j ? ", " : "", lines[i][j].val);
-            } /* for */
-            puts("");
+    } /* for */
+    printf(D("max = %hd\n"), max);
+
+    /* get the path back to the root */
+    for (i = 0; i < nlines; i++) /* last line */
+        if (lines[nlines-1][i].sum == max)
+            lines[nlines-1][i].flg |= 0x04;
+
+    for (i = nlines-1; i; i--) { /* go up to the top */
+        for (j = 0; j <= i; j++) {
+            if (lines[i][j].flg & 0x04) {
+                if (lines[i][j].flg & 0x02) /* has a left parent */
+                    lines[i-1][j-1].flg |= 0x04;
+                if (lines[i][j].flg & 0x01) /* has a right parent (or both) */
+                    lines[i-1][j].flg |= 0x04;
+            } /* if */
         } /* for */
-    }
+    } /* for */
+
+    for (i = 0; i < nlines; i++) { /* print the triangle */
+        printf("%*s", 2*(nlines-i), "");
+        for (j = 0; j <= i; j++) {
+            char *fmt;
+            if (lines[i][j].flg & 0x04)
+                fmt = "%s\033[7m%02d\033[0m";
+            else
+                fmt = "%s%02d";
+            printf(fmt, j ? ", " : "", lines[i][j].val);
+        } /* for */
+        puts("");
+    } /* for */
 } /* main */
 
