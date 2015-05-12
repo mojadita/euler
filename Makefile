@@ -1,5 +1,6 @@
-targets = euler_2 euler_9 euler_78 euler_67
+targets = euler_1 euler_2 euler_9 euler_78 euler_67
 
+euler_1_objs = euler_1.o
 euler_2_objs = euler_2.o
 euler_9_objs = euler_9.o
 euler_78_objs = euler_78.o euler_78_cache.o
@@ -15,6 +16,8 @@ all: $(targets)
 clean:
 	$(RM) $(targets) $(objs)
 
+euler_1: $(euler_1_objs)
+	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $(euler_1_objs) $(euler_1_libs)
 euler_2: $(euler_2_objs)
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $(euler_2_objs) $(euler_2_libs)
 euler_9: $(euler_9_objs)
