@@ -25,7 +25,11 @@
 #include <time.h>
 #include "euler_78_cache.h"
 
-#if _POSIX_TIMERS
+#ifndef USE_CLOCK_GETTIME
+#define USE_CLOCK_GETTIME   1
+#endif
+
+#if USE_CLOCK_GETTIME
 #define XSECS_PER_SECOND    1000000000UL
 #define NSECFMT             "%09d"
 #else
@@ -56,7 +60,7 @@
 unsigned ind = 0;
 
 struct cache_data global_state = {
-    .mod = 0,
+    .mod = 1000000,
     .arg = 0,
 };
 
@@ -182,33 +186,25 @@ int main(int argc, char **argv)
     unsigned res;
     struct timespec t0, t1;
 
-    TR(cache_restore(&global_state, argv[0]));
 
     while ((opt = getopt(argc, argv, "vi:m:")) != EOF) {
         switch(opt) {
         case 'v': tr = ""; break;
         case 'i': global_state.arg = atoi(optarg); break;
-        case 'm': if (global_state.mod) {
-                      fprintf(stderr,
-                              D("trying to set global_state.mod twice\n"));
-                  } else {
-                      global_state.mod = atoi(optarg);
-                  } /* if */
-                  break;
+        case 'm': global_state.mod = atoi(optarg); break;
         } /* switch */
     } /* while */
 
-    if (!global_state.mod)
-        global_state.mod = MOD;
+    TR(cache_restore(&global_state, argv[0]));
 
     TR(set_signals());
 
-    clock_gettime(CLOCK_REALTIME, &t1);
+    TR(clock_gettime(CLOCK_REALTIME, &t1));
     do {
         int sec, nsec;
         t0 = t1;
         TR(res = p(++global_state.arg, tr));
-        clock_gettime(CLOCK_REALTIME, &t1);
+        TR(clock_gettime(CLOCK_REALTIME, &t1));
         nsec = t1.tv_nsec - t0.tv_nsec;
         sec = t1.tv_sec - t0.tv_sec;
         if (t0.tv_nsec > t1.tv_nsec) {

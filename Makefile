@@ -4,7 +4,7 @@ euler_1_objs = euler_1.o
 euler_2_objs = euler_2.o
 euler_9_objs = euler_9.o
 euler_78_objs = euler_78.o euler_78_cache.o
-euler_78_libs = -lavl
+euler_78_libs = -lavl -lrt
 euler_67_objs = euler_67.o
 euler_67_libs = 
 

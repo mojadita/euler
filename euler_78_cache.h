@@ -21,7 +21,7 @@
 #include <stdio.h>
 
 #define GZIP            "/bin/gzip"
-#define ARCHIVE_NAME    ".%s-cache.gz"
+#define ARCHIVE_NAME    ".%s-%u.gz"
 
 struct cache_data {
     unsigned mod;

@@ -143,11 +143,11 @@ void cache_save(const struct cache_data *cd, const char *n)
     size_t len = 0;
 
     n = basename(n);
-    DEB(D("saving state to '" ARCHIVE_NAME "'\n"), n);
+    DEB(D("saving state to '" ARCHIVE_NAME "'\n"), n, cd->mod);
     o = popen_cache_file(buffer, sizeof buffer,
             "w",
             GZIP " > '" ARCHIVE_NAME "'",
-            n);
+            n, cd->mod);
     if (!o) {
         fprintf(stderr,
                 D("%s: %s(errno=%d)\n"),
@@ -189,11 +189,11 @@ void cache_restore(struct cache_data *cd, const char *n)
 
     n = basename(n);
     DEB(D("loading state from \"" ARCHIVE_NAME "\"\n"),
-            n);
+            n, cd->mod);
     o = popen_cache_file(buffer, sizeof buffer,
             "r",
             GZIP " -d < '" ARCHIVE_NAME "'",
-            n);
+            n, cd->mod);
     if (!o) {
         fprintf(stderr,
                 D("%s: %s(errno=%d)\n"),
