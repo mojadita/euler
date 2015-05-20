@@ -57,16 +57,11 @@ struct block {
 static void read_lock(struct block *b)
 {
     pthread_cond_wait(b->access);
-    switch(b->state) {
-    case st_idle:
-        b->state = st_reading;
-    case st_reading:
-        break;
-    case st_writing:
-        pthread_cond_wait(b->readers_q);
-        b->state = st_reading;
-        break;
-    } /* switch */
+    while (b->state == st_writing) {
+        pthread_cond_signal(b->access);
+        pthread_con_wait(b->readers_q);
+        pthread_cond_wait(b->access);
+    } /* while */
     b->readers++;
     pthread_cond_signal(b->access);
 }
