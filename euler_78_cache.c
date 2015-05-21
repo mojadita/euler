@@ -37,69 +37,6 @@
 #endif
 #define D(x) __FILE__":%d:%s: " x, __LINE__, __func__
 
-struct block {
-    ptread_cond_t   access;
-
-    size_t          readers;
-    pthread_cond_t  readers_q;
-
-    size_t          writers;
-    pthread_cond_t  writers_q;
-
-    enum {
-        st_idle,
-        st_reading,
-        st_writing,
-    }               state;
-    AVL_TREE        data;
-};
-
-static void read_lock(struct block *b)
-{
-    pthread_cond_wait(b->access);
-    while (b->state == st_writing) {
-        pthread_cond_signal(b->access);
-        pthread_con_wait(b->readers_q);
-        pthread_cond_wait(b->access);
-    } /* while */
-    b->readers++;
-    pthread_cond_signal(b->access);
-}
-
-static void read_unlock(struct block *b)
-{
-    pthread_cond_wait(b->access);
-    b->readers--;
-    if (!b->readers) {
-        if (b->writers) {
-            b->state = st_writing;
-            pthread_cond_signal(b->writers_q);
-        } else {
-            b->state = st_idle;
-        } /* if */
-    } /* if */
-    pthread_cond_signal(b->access);
-}
-
-static void write_lock(struct block *b)
-{
-    pthread_cond_wait(b->access);
-    switch(b->state) {
-    case st_idle:
-        b->state = st_writing;
-    case st_writing:
-        break;
-    case st_reading:
-        pthread_cond_signal(b->access);
-        pthread_cond_wait(b->writers_q);
-        b->state
-}
-
-static void write_unlock(struct block *b)
-{
-}
-
-
 
 static AVL_TREE data_p = NULL;
 static AVL_TREE data_q = NULL;
