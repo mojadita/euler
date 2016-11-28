@@ -23,12 +23,12 @@ int main()
     for (i = 0; b < 4000000; i++) {
         uint64_t c = a + b;
         if (i % 3 == 0) {
-            printf("%s%llu", n++ ? "+" : "", b);
+            printf("%s%lu", n++ ? "+" : "", b);
             acum += b;
         } /* if */
         a = b; b = c;
     } /* for */
-    printf(" = %llu\n", acum);
+    printf(" = %lu\n", acum);
 
     exit(EXIT_SUCCESS);
 } /* main */

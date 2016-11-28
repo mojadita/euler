@@ -28,6 +28,7 @@
 #include <stdio.h>
 #include <assert.h>
 #include <limits.h>
+#include <getopt.h>
 
 #define max_height  (256)
 #define N           (max_height*(max_height-1)/2)
@@ -41,6 +42,7 @@
 
 short tgt = SHRT_MIN;
 int mode = SRCH_MAX;
+int color = 0;
 int flags = 0;
 
 struct cell {
@@ -52,6 +54,13 @@ struct cell {
 struct cell array[N+1];
 struct cell *lines[max_height];
 
+char *cads[2][2][2] = {
+    "<", ">",
+    "[", "]",
+    "\033[36m", "\033[0m",
+    "\033[32m", "\033[0m",
+};
+
 int main(int argc, char **argv)
 {
     int i = 0, j = 0, n = 0;
@@ -59,15 +68,13 @@ int main(int argc, char **argv)
     int opt;
     struct cell *p = array;
     unsigned val;
-    char *pre = "<",
-         *pos = ">";
 
     while ((opt = getopt(argc, argv, "mMvc")) != EOF) {
         switch (opt) {
         case 'M': mode = SRCH_MAX; tgt = SHRT_MIN; break;
         case 'm': mode = SRCH_MIN; tgt = SHRT_MAX; break;
         case 'v': flags |= FLAG_VERBOSE; break;
-        case 'c': pre = "\033[1;32m"; pos = "\033[0m"; break;
+        case 'c': color = 1; break;
         } /* switch */
     } /* while */
 
@@ -165,7 +172,7 @@ int main(int argc, char **argv)
             break;
         } /* switch */
     } /* for */
-    printf(D("%s = %hd\n"), mode == SRCH_MAX ? "MAX" : "min", tgt);
+    printf(D("%s%s%s = %hd\n"), cads[color][mode][0], mode == SRCH_MAX ? "MAX" : "min", cads[color][mode][1], tgt);
 
     if (flags & FLAG_VERBOSE) {
         /* first, mark the targets */
@@ -194,7 +201,7 @@ int main(int argc, char **argv)
                     fmt = "%1$s%3$s%2$02d%4$s";
                 else
                     fmt = "%1$s%2$02d";
-                printf(fmt, j ? ", " : "", lines[i][j].val, pre, pos);
+                printf(fmt, j ? "  " : "", lines[i][j].val, cads[color][mode][0], cads[color][mode][1]);
             } /* for */
             puts("");
         } /* for */
