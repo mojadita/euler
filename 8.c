@@ -54,18 +54,19 @@ int main(int argc, char **argv)
     }
 
     char *p, *res = NULL;
-    int res_prod = 0;
+    unsigned long long res_prod = 0;
     for (p = strtok(N, "0"); p; p = strtok(NULL, "0")) {
         if (strlen(p) < n) continue;
         char *q = p;
-        int prod = 1, i;
+        unsigned long long prod = 1LL;
+		int i;
         for (i = 0; i < n; i++) { /* initial product */
             prod *= *p++ - '0';
         }
         for(;;) {
             int larger = prod > res_prod;
             if (flags & FLAG_VERBOSE)
-                printf("Trying %.*s ==> %d%s\n",
+                printf("Trying %.*s ==> %llu%s\n",
                         n, q, prod,
                         larger ? " !" : "");
             if (larger) {
@@ -76,11 +77,15 @@ int main(int argc, char **argv)
             prod *= *p++ - '0';
         }
     }
-    int pos = res - N;
-    printf("Largest product at position %d (%s%.*s%s): %d\n",
-            pos,
-            pos ? "..." : "", n, res,
-            pos < sizeof N - 1 - n ? "..." : "",
-            res_prod);
+	if (res) {
+		int pos = res - N;
+		printf("Largest product at position %d (%s%.*s%s): %llu\n",
+				pos,
+				pos ? "..." : "", n, res,
+				pos < sizeof N - 1 - n ? "..." : "",
+				res_prod);
+	} else {
+		printf("No solution found\n");
+	}
 }
 
