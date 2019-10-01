@@ -1,6 +1,6 @@
 RM = rm -f
 
-targets = euler_1 euler_2 euler_9 euler_78 euler_67 120
+targets = euler_1 euler_2 euler_9 euler_78 euler_67 120 24 8
 TOCLEAN		+= $(targets)
 
 euler_1_objs = euler_1.o
